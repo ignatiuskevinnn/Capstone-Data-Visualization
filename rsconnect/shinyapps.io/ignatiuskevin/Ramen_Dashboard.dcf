@@ -1,0 +1,12 @@
+name: Ramen_Dashboard
+title: Ramen_Dashboard
+username:
+account: ignatiuskevin
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2790727
+bundleId: 3618899
+url: https://ignatiuskevin.shinyapps.io/Ramen_Dashboard/
+when: 1599830781.69084
+asMultiple: FALSE
+asStatic: FALSE

@@ -1,0 +1,106 @@
+---
+title: "LBB Ramen"
+author: "Ignatius Kevin"
+date: "9/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(dplyr)
+library(ggplot2)
+library(patchwork)
+library(shiny)
+library(scales)
+library(glue)
+library(plotly)
+```
+#Panggil data dari csv
+
+```{r}
+ramen <- read.csv("data/ramen-ratings.csv")
+glimpse(ramen)
+```
+#Mengubah tipe data menjadi factor untuk kolom "Style", "Country", dan "Stars"
+
+```{r}
+ramen[,c("Style", "Country", "Stars")] <- lapply(ramen[, c("Style", "Country", "Stars")], as.factor)
+glimpse(ramen)
+ramen
+```
+#Mengecek apakah ada data kosong pada semua kolom 
+
+```{r}
+colSums(is.na(ramen))
+```
+#Membuat plot Top 10 Country with Most Ramen Brand
+```{r}
+ramen10 <- ramen %>% 
+  group_by(Country) %>% 
+  tally %>% 
+  arrange(desc(n)) %>% 
+  slice(1:10)
+
+ramen10
+```
+```{r}
+theme_algo <- theme(
+  panel.background = element_rect(fill = "white"),
+  panel.grid.major = element_line(colour = "white"),
+  plot.title = element_text(family = "", 
+                            size = 20, 
+                            color = "Black")
+)
+```
+
+```{r}
+p1 <- ramen10 %>% 
+  ggplot(aes(x = n, y = reorder(Country, n),
+             text = glue(
+               "Brand = {n}"
+             ))) +
+  geom_col(fill = "#9D34FE") + 
+  labs(title = "Top 10 Countries with Most Ramen Brands",
+       x = "Total Brand", 
+       y = "") +
+  theme(legend.position = "none") +
+  theme_algo
+
+ggplotly(p1, tooltip = "text")
+```
+#membuat plot 5 Stars Ramen Packaging Style
+```{r}
+ramen5 <- filter(.data = ramen, Stars == "5")
+ramenstyle <- ramen5 %>% 
+  group_by(Country)
+ramenstyle
+```
+
+```{r}
+theme_algo2 <- theme(
+  panel.background = element_rect(fill = "White"),
+  panel.grid.major = element_line(colour = "White"),
+  panel.grid.minor = element_blank(),
+  plot.title = element_text(family = "", 
+                            size = 20, 
+                            color = "Black")
+)
+```
+
+```{r}
+p2 <- ramenstyle %>% 
+  ggplot(aes(fill = Country, reorder(factor(Style), Style, function(x) -length(x)),
+            text = glue(
+               "Country = {Country}"                         
+            ))) +
+  geom_bar(position = "Stack") +
+  labs(title = "5 Stars Ramen Packaging Style",
+       x = "Packaging Style", 
+       y = "Total") +
+  theme_algo2
+
+ggplotly(p2, tooltip = "text")
+```
